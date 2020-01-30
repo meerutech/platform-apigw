@@ -27,8 +27,6 @@ class APIGateway(core.Stack):
         # Adding base method, this is just to get the API Gateway created
         self.base_method = self.api_gateway.root.add_method("ANY")
         
-
-        
         # VPC Link setup with list of NLB's
         if config['APIGW_NLBS']:
             for name, arn in config['APIGW_NLBS'].items():
