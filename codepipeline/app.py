@@ -21,11 +21,12 @@ class APIGatewayPipeline(core.Stack):
         
         # add a source stage
         self.source_stage = self.pipeline.add_stage(stage_name="Source")
+        self.source_artifact = codepipeline.Artifact()
         
         # add source action
         self.source_stage.add_action(codepipeline_actions.GitHubSourceAction(
             oauth_token=core.SecretValue.secrets_manager(secret_id='prod/github_oauth_token',json_field='github_oauth_token'),
-            output=codepipeline.Artifact(artifact_name='SourceArtifact'),
+            output=self.source_artifact,
             owner='meerutech',
             repo='platform-apigw',
             action_name='Pull_Source',
@@ -49,7 +50,7 @@ class APIGatewayPipeline(core.Stack):
         
         # add validate codebuild action
         self.validate_stage.add_action(codepipeline_actions.CodeBuildAction(
-            input=codepipeline.Artifact(artifact_name='SourceArtifact'),
+            input=self.source_artifact,
             project=self.codebuild_validate,
             action_name='Validate_Changes'
         ))
@@ -67,7 +68,7 @@ class APIGatewayPipeline(core.Stack):
         
         # add deploy codebuild action
         self.deploy_stage.add_action(codepipeline_actions.CodeBuildAction(
-            input=codepipeline.Artifact(artifact_name='SourceArtifact'),
+            input=self.source_artifact,
             project=self.codebuild_deploy,
             action_name='Deploy_Changes'
         ))
