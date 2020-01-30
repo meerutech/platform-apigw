@@ -1,0 +1,11 @@
+[APIGW]
+AWS_DEFAULT_REGION = us-east-2
+CDK_DEFAULT_ACCOUNT = 12345678901
+
+[APIGW_NLBS]
+EKS_NGINX_SERVICE_VPC_LINK= arn:aws:elasticloadbalancing:us-east-2:12345678901:loadbalancer/net/abcdefghijklmnopqrs/tuvwxyz
+
+[CODEPIPELINE]
+# Setting separately as the region/account may be different for pipelines
+AWS_DEFAULT_REGION = us-east-2
+CDK_DEFAULT_ACCOUNT = 12345678901

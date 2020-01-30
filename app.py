@@ -7,7 +7,11 @@ from aws_cdk import (
     core
 )
 
-from os import getenv
+from configparser import ConfigParser
+
+config = ConfigParser()
+config.read('config.ini')
+
 
 class APIGateway(core.Stack):
 
@@ -23,6 +27,25 @@ class APIGateway(core.Stack):
         # Adding base method, this is just to get the API Gateway created
         self.base_method = self.api_gateway.root.add_method("ANY")
         
+
+        
+        # VPC Link setup with list of NLB's
+        if config['APIGW_NLBS']:
+            for name, arn in config['APIGW_NLBS'].items():
+                self.service_nlb = elb.NetworkLoadBalancer.from_network_load_balancer_attributes(
+                    self, "{}NLB".format(name),
+                    load_balancer_arn=arn
+                )
+                
+                self.gateway_vpc_link = apigw.VpcLink(
+                    self, "VPCLink{}".format(name),
+                    description=name,
+                    targets=[
+                        self.service_nlb
+                    ],
+                    vpc_link_name=name
+                )
+                
         # Stages (test, dev, stage)
         #self.prod_stage = apigw.Stage(
         #    self, "DevStage",
@@ -37,27 +60,10 @@ class APIGateway(core.Stack):
         #    internet_facing=False,
         #)
         
-        self.nginx_service_nlb = elb.NetworkLoadBalancer.from_network_load_balancer_attributes(
-            self, "NginxServiceNLB",
-            load_balancer_arn=getenv('NGINX_SERVICE_LB_ARN')
-        )
-        
-        # VPC Link setup with list of NLB's
-        self.gateway_vpc_link = apigw.VpcLink(
-            self, "VPCLink",
-            description="VPC Link from API Gateway to EKS VPC",
-            targets=[
-                self.nginx_service_nlb
-            ],
-            vpc_link_name="EKS_NGINX_SERVICE_VPC_LINK"
-        )
-        
-        # TODO: Create stage variable for vpc links
-        
         
 app = core.App()
 
-_env = core.Environment(account=getenv('CDK_DEFAULT_ACCOUNT'), region=getenv('AWS_DEFAULT_REGION'))
+_env = core.Environment(account=config['APIGW']['CDK_DEFAULT_ACCOUNT'], region=config['APIGW']['AWS_DEFAULT_REGION'])
 
 APIGateway(app, "api-gateway", env=_env)
 

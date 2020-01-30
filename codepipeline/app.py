@@ -9,7 +9,11 @@ from aws_cdk import (
     core
 )
 
+from configparser import ConfigParser
 from os import getenv
+
+config = ConfigParser()
+config.read('../config.ini')
 
 
 class CodeBuildProjects(core.Construct):
@@ -45,18 +49,6 @@ class APIGatewayPipeline(core.Stack):
     def __init__(self, scope: core.Stack, id: str, **kwargs):
         super().__init__(scope, id, **kwargs)
 
-        # Codebuild projects to use for pipeline
-        # TODO: CDK the codebuild projects
-        #self.codebuild_validate = codebuild.Project.from_project_arn(
-        #    self, "ValidateCodeBuildProject",
-        #    project_arn=getenv('CODEBUILD_VALIDATE_ARN')
-        #    )
-        #    
-        #self.codebuild_deploy = codebuild.Project.from_project_arn(
-        #    self, "BuildCodeBuildProject",
-        #    project_arn=getenv('CODEBUILD_BUILD_ARN')
-        #    )
-        
         # create a pipeline
         self.pipeline = codepipeline.Pipeline(self, "Pipeline", pipeline_name='API_Gateway')
         
@@ -109,7 +101,7 @@ class APIGatewayPipeline(core.Stack):
         
 app = core.App()
 
-_env = core.Environment(account=getenv('CDK_DEFAULT_ACCOUNT'), region=getenv('AWS_DEFAULT_REGION'))
+_env = core.Environment(account=config['CODEPIPELINE']['CDK_DEFAULT_ACCOUNT'], region=config['CODEPIPELINE']['AWS_DEFAULT_REGION'])
 
 APIGatewayPipeline(app, "api-gateway-pipeline", env=_env)
 
