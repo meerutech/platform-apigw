@@ -64,8 +64,8 @@ class APIGatewayPipeline(core.Stack):
         self.source_stage.add_action(codepipeline_actions.GitHubSourceAction(
             oauth_token=core.SecretValue.secrets_manager(secret_id='prod/github_oauth_token',json_field='github_oauth_token'),
             output=self.source_artifact,
-            owner='meerutech',
-            repo='platform-apigw',
+            owner=config['CODEPIPELINE']['GITHUB_OWNER'],
+            repo=config['CODEPIPELINE']['GITHUB_REPO'],
             action_name='Pull_Source',
             run_order=1,
         ))
