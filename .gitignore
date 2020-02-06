@@ -1,3 +1,4 @@
 envs.sh
 *cdk.out*
 *cdk.context.json*
+*config.ini

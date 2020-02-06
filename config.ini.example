@@ -9,3 +9,7 @@ EKS_NGINX_SERVICE_VPC_LINK= arn:aws:elasticloadbalancing:us-east-2:12345678901:l
 # Setting separately as the region/account may be different for pipelines
 AWS_DEFAULT_REGION = us-east-2
 CDK_DEFAULT_ACCOUNT = 12345678901
+# Github repo info
+GITHUB_OWNER = owner_here
+GITHUB_REPO = repo_here
+GITHUB_BRANCH = branch_here
