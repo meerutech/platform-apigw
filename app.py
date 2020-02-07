@@ -36,6 +36,8 @@ class APIGateway(core.Stack):
                         load_balancer_arn=arn
                     )
                     
+                    #self.nlb_uri = self.service_nlb.uri
+                    
                     self.gateway_vpc_link = apigw.VpcLink(
                         self, "VPCLink{}".format(name),
                         description=name,
@@ -67,6 +69,9 @@ app = core.App()
 
 _env = core.Environment(account=config['APIGW']['CDK_DEFAULT_ACCOUNT'], region=config['APIGW']['AWS_DEFAULT_REGION'])
 
-APIGateway(app, "api-gateway", env=_env)
+# TODO: Stackname and environment make as env variables
+ENVIRONMENT = 'preprod'
+
+APIGateway(app, "api-gateway-{}".format(ENVIRONMENT), env=_env)
 
 app.synth()
