@@ -21,7 +21,7 @@ class APIGateway(core.Stack):
         # API Gateway Type: Rest API
         self.api_gateway = apigw.RestApi(
             self, "APIGateway",
-            rest_api_name="apigateway-demo",
+            rest_api_name=self.stack_name,
         )
         
         # Adding base method, this is just to get the API Gateway created
