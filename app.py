@@ -28,21 +28,25 @@ class APIGateway(core.Stack):
         self.base_method = self.api_gateway.root.add_method("ANY")
         
         # VPC Link setup with list of NLB's
-        if config['APIGW_NLBS']:
-            for name, arn in config['APIGW_NLBS'].items():
-                self.service_nlb = elb.NetworkLoadBalancer.from_network_load_balancer_attributes(
-                    self, "{}NLB".format(name),
-                    load_balancer_arn=arn
-                )
-                
-                self.gateway_vpc_link = apigw.VpcLink(
-                    self, "VPCLink{}".format(name),
-                    description=name,
-                    targets=[
-                        self.service_nlb
-                    ],
-                    vpc_link_name=name
-                )
+        try:
+            if config['APIGW_NLBS']:
+                for name, arn in config['APIGW_NLBS'].items():
+                    self.service_nlb = elb.NetworkLoadBalancer.from_network_load_balancer_attributes(
+                        self, "{}NLB".format(name),
+                        load_balancer_arn=arn
+                    )
+                    
+                    self.gateway_vpc_link = apigw.VpcLink(
+                        self, "VPCLink{}".format(name),
+                        description=name,
+                        targets=[
+                            self.service_nlb
+                        ],
+                        vpc_link_name=name
+                    )
+        except Exception as e:
+            print("No NLBs present, moving on...")
+            pass
                 
         # Stages (test, dev, stage)
         #self.prod_stage = apigw.Stage(
